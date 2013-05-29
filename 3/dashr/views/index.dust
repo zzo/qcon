@@ -1,0 +1,33 @@
+<html>
+<head>
+<style>
+{#loggedIn}
+    div.loggedIn { display: block; }
+    div.loggedOut { display: none; }
+{:else}
+    div.loggedIn { display: none; }
+    div.loggedOut { display: block; }
+{/loggedIn} 
+</style>
+</head>
+<body>
+
+<div class="loggedIn">
+    Welcome back {loggedin}!
+    <button id="logout">Logout</button>
+</div>
+
+<div class="loggedOut">
+    Log In!
+    <form id="loginForm">
+        <input id="email" type="text" placeholder="Email" />
+        <input id="password" type="password" placeholder="Password" />
+        <button id="login">Sign in</button>
+        <button id="register">Register</button>
+    </form>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="/javascripts/login.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "dashr",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+    "test": "jasmine-node spec --forceexit"
+  },
+  "dependencies": {
+    "express": "3.2.5",
+    "dustjs-linkedin": "~1.2.4",
+    "consolidate": "~0.9.1"
+  },
+  "devDependencies": {
+    "jasmine-node": ""
+  }
+}

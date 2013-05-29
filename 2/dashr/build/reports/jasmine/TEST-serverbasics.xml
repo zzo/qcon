@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites>
+<testsuite name="server basics" errors="0" tests="1" failures="1" time="0.02" timestamp="2013-05-29T09:34:52">
+  <testcase classname="server basics" name="should respond be alive" time="0.019"><failure>1: Expected 404 to equal 200.</failure></testcase>
+</testsuite>
+</testsuites>

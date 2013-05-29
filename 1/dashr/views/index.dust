@@ -1,0 +1,8 @@
+Log In!
+<form class="navbar-form">
+    <input class="span2" type="text" placeholder="Email">
+    <input class="span2" type="password" placeholder="Password">
+    <button id="login" class="btn">Sign in</button>
+    <button id="register" class="btn">Register</button>
+</form>
+
