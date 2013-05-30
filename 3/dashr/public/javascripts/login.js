@@ -5,13 +5,14 @@
         // This is the easiest way to have default options.
         var settings = $.extend({
             // These are the defaults.
-            login: "#email"
-            , password: "#password"
-            , url: '/userLogin'
-            , success: loginOK
-            , error: loginFailed
+            login: "#emaillogin"
+            , password: "#passwordlogin"
+            , url: '/user/login'
+            , success: responseOK
+            , error: responseFAILED
+            , errorDiv: "#loginError"
+            , modalId: "#loginForm"
         }, options );
-
 
         function collectFormValues() {
             return {
@@ -21,6 +22,10 @@
         }   
 
         function tryToLogin(vals) {
+            if (!vals.email || !vals.password) {
+                settings.error("Missing email or password");
+                return;
+            }
             $.ajax({
                 url: settings.url
                 , dataType: 'json'
@@ -28,30 +33,42 @@
                 , type: 'POST'
                 , contentType: 'application/json'
                 , data: JSON.stringify(vals)
-                , success: function(data, status, jqXHR) { settings.success(data, status); }
+                , success: function(data, status, jqXHR) { settings.success(JSON.parse(data), status); }
                 , error: function(jqXHR, status, err) { settings.error(status, err); }
             });
         }
 
-        function loginOK(data) {
-            console.log('loginOK');
+        function responseOK(data) {
+            console.log('responseOK');
             console.log(data);
 
             if (data.error) {
-                loginFailed(data.error);
+                responseFAILED(data.error);
             } else {
                 // login success!
+                // close modal (if there is one) - you are now logged in!
+                $(settings.modalId).modal('hide');
+                if (data.username) {
+                    // refresh page
+                    dust.render('index', { user: data }, function(err, out){
+                        var newDoc = document.open("text/html", "replace");
+                        newDoc.write(out);
+                        newDoc.close();
+                    });
+                }
             }
         }
 
-        function loginFailed(errorStatus, httpError) {
-            console.log('loginFailed');
+        function responseFAILED(errorStatus, httpError) {
+            console.log('responseFAILED');
+            $(settings.errorDiv).html(errorStatus);
             console.log(errorStatus);
             console.log(httpError);
         }
 
-        this.on("submit", function(event) {
+        this.submit(function(event) {
             event.preventDefault();
+            $(settings.errorDiv).html('');
             tryToLogin(collectFormValues());
         });
 
@@ -64,5 +81,14 @@
 
         return this;
     };
+
+    $("#loginForm").login();
+    $("#registerForm").login({ 
+        url: "/user/register"
+        , errorDiv: "#registerError"
+        , modalId: "#registerForm"
+        , login: "#emailregister"
+        , password: "#passwordregister"
+    });
 
 })( jQuery );

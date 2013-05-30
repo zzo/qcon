@@ -8,7 +8,10 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , cons = require('consolidate')
-  , path = require('path');
+  , path = require('path')
+  , RedisExpress = require('connect-redis')(express)
+  , redis = require("redis").createClient()
+;
 
 var app = express();
 
@@ -17,12 +20,17 @@ app.engine('dust', cons.dust);
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'dust');
+app.set('redis', redis);
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
-app.use(express.session({ secret: 'dashr', key: 'sid', ));
+app.use(express.session({
+    secret: "this is a good secret"
+    , key: 'sid'
+    , store: new RedisExpress({ client: redis })
+}));
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -31,8 +39,8 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+user.setup(app); // this has to go first!
 app.get('/', routes.index);
-app.get('/users', user.list);
 
 // run from command line or loaded as a module (for testing)
 if (require.main === module) {

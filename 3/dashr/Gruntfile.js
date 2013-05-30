@@ -20,6 +20,7 @@ module.exports = function(grunt) {
                     , vendor: [ 
                         'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js'
                         , 'public/vendor/jasmine-jquery.js' 
+                        , 'public/vendor/dust-core-1.2.3.min.js' 
                     ]
                     , junit: {
                         path: "./build/reports/jasmine/"
@@ -29,8 +30,7 @@ module.exports = function(grunt) {
             }
         },
         jasmine_node: {
-            all: ['spec/server'],
-            projectRoot: ".",
+            projectRoot: "./spec/server",
             requirejs: false,
             forceExit: true,
             jUnit: {
@@ -51,6 +51,13 @@ module.exports = function(grunt) {
                     */
                 }
             }
+        },
+        dustjs: {
+            compile: {
+                files: {
+                    "public/javascripts/templates.js": ["views/**/*.dust"]
+                }
+            }
         }
     });
 
@@ -59,6 +66,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-jasmine-node');
     grunt.loadNpmTasks('grunt-express');
+    grunt.loadNpmTasks('grunt-dustjs');
     
     // Default task(s).
     grunt.registerTask('default', ['jshint']);
