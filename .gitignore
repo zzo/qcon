@@ -14,5 +14,10 @@ results
 
 node_modules
 templates.js
-
+_SpecRunner.html
 npm-debug.log
+
+coverage.json
+coverage/**
+build/**
+

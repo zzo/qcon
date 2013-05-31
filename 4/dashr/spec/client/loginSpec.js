@@ -1,5 +1,7 @@
 describe("login", function() {
 
+    var login;
+
     it("should use defaults", function() {
 
         setFixtures('\
