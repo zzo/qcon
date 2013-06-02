@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         jshint: {
-            all: ['Gruntfile.js', 'public/javascripts/**/*.js', 'spec/**/*.js']
+            all: ['Gruntfile.js', 'public/javascripts/**/*.js', 'spec/**/*.js', 'app.js']
             , options: {
                 globals: {
                     jQuery: true
@@ -39,17 +39,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        jasmine_node: {
-                projectRoot: "./spec/server",
-                requirejs: false,
-                forceExit: true,
-                jUnit: {
-                    report: true,
-                    savePath : "./build/reports/jasmine_node/",
-                    useDotNotation: true,
-                    consolidate: true
-                }
-        },
         express: {
             server: {
                 options: {
@@ -67,20 +56,6 @@ module.exports = function(grunt) {
                 }
             }
         }
-                /*
-        , webdriver: {
-            options: {
-                browser: 'firefox'    // or firefox or safari
-//                browser: 'safari'    // or firefox or safari
-//                , reporter: 'html'
-//                , output: 'build/reports/webdriver.html'
-            }
-            , dev: {
-                url: 'http://127.0.0.1:3000'
-                , tests: ['./spec/webdriver/*.js']
-            }
-        }
-        */
         , env: {
             options : {
                 //Shared Options Hash
@@ -92,16 +67,54 @@ module.exports = function(grunt) {
                 COVERAGE: true
             }
         }
+        , watch: {
+            jshint: {
+                files: '<%= jshint.all %>'
+                , tasks: ['jshint'],
+            }
+            , jasmine_client: {
+                files: [ '<%= jasmine.test.src %>', '<%= jasmine.test.options.specs %>' ] 
+                , tasks: ['jasmine'],
+            }
+            , jasmine_server: {
+                files: [ '<%= jasmine_node_coverage.options.specDir %>', 'routes/' ]
+                , tasks: ['jasmine_node_coverage'],
+            }
+            , webdriver: {
+                files: [ '<%= webd.options.tests %>', 'routes/' ]
+                , tasks: ['webdriver'],
+            }
+
+        }
+        , jasmine_node_coverage: {
+            options: {
+                coverDir: 'public/coverage/server'
+                , specDir: 'spec/server'
+                , junitDir: 'build/reports/jasmine_node/'
+            }
+        }
+        , webd: {
+            options: {
+                tests: 'spec/webdriver/*.js'
+                , junitDir: 'build/reports/webdriver/'
+                , coverDir: 'public/coverage/webdriver'
+            }
+        }
+        , total_coverage: {
+            options: {
+                coverageDir: 'build/reports'
+                , outputDir: 'public/coverage/total'
+            }
+        }
     });
 
     // Load the plugins
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
-    grunt.loadNpmTasks('grunt-jasmine-node');
     grunt.loadNpmTasks('grunt-express');
     grunt.loadNpmTasks('grunt-dustjs');
-//    grunt.loadNpmTasks('grunt-webdriver');
     grunt.loadNpmTasks('grunt-env');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     
     // Default task(s).
     grunt.registerTask('default', ['jshint']);
@@ -109,15 +122,12 @@ module.exports = function(grunt) {
     grunt.registerTask('test', [
         'jshint', 
         'jasmine',
-      /* 'jasmine_node', only necessary if you want junit xml report */
         'jasmine_node_coverage',
-        'env:test',
-        'env:coverage',
-        'express',
-        'webd',
+        'webdriver_coverage',
         'total_coverage'
     ]); 
 
+    // webdriver tests with coverage
     grunt.registerTask('webdriver_coverage', [
         'env:test'  // use test db
         , 'env:coverage' // server sends by coverage'd JS files
@@ -125,6 +135,7 @@ module.exports = function(grunt) {
         , 'webd:coverage'
     ]);
 
+    // webdriver tests without coverage
     grunt.registerTask('webdriver', [
         'env:test'  // use test db
         , 'express'
@@ -132,17 +143,31 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('jasmine_node_coverage', 'Istanbul code coverage for jasmine_node', function() {
-        var done = this.async();
+        var done = this.async()
+            , options = this.options()
+        ;
 
-        exec('node_modules/istanbul/lib/cli.js cover --dir public/coverage/server -x "**/spec/**" jasmine-node -- spec/server --forceexit --junitreport --output build/reports/jasmine_node/', { }, function(err, stdout, stderr) {
-            grunt.log.write(stdout);
-            grunt.log.write('Server-side coverage available at: ' + path.join(__dirname, 'public', 'coverage', 'server', 'lcov-report', 'index.html'));
-            done();
+        var coverCmd = 'node_modules/istanbul/lib/cli.js cover '
+            .concat('--dir ')
+            .concat(options.coverDir)
+            .concat(' -x ' + "'**/spec/**'" + ' jasmine-node')
+            .concat(' -- ' )
+            .concat(options.specDir)
+            .concat(' --forceexit --junitreport --output ')
+            .concat(options.junitDir);
+
+        exec(coverCmd, { }, function(err, stdout, stderr) {
+                grunt.log.write(stdout);
+                grunt.log.write('Server-side coverage available at: ' +
+                        path.join(options.coverDir, 'lcov-report', 'index.html'));
+                done();
         });
     });
 
     grunt.registerTask('webd', 'Webdriver with optional coverage', function(coverage) {
-        var done = this.async();
+        var done = this.async()
+            , options = this.options()
+        ;
 
         grunt.task.requires('env:test');
         grunt.task.requires('express');
@@ -151,11 +176,22 @@ module.exports = function(grunt) {
             grunt.task.requires('env:coverage');
         }
 
-        exec('jasmine-node spec/webdriver --forceexit --junitreport --output build/reports/webdriver/', { }, function(err, stdout, stderr) {
+        var testCmd = 'jasmine-node '
+            .concat(options.tests)
+            .concat(' --forceexit --junitreport --output ')
+            .concat(options.junitDir);
+
+        exec(testCmd, { }, function(err, stdout, stderr) {
             if (coverage) {
-                exec('node_modules/istanbul/lib/cli.js report --root build/reports/webdriver --dir public/coverage/webdriver', { }, function(err, stdout, stderr) {
+                var coverCmd = 'node_modules/istanbul/lib/cli.js report --root '
+                    .concat(options.junitDir)
+                    .concat(' --dir ')
+                    .concat(options.coverDir);
+
+                exec(coverCmd, { }, function(err, stdout, stderr) {
                     grunt.log.write(stdout);
-                    grunt.log.write('Webdriver coverage available at: ' + path.join(__dirname, 'public', 'coverage', 'webdriver', 'lcov-report', 'index.html'));
+                    grunt.log.write('Webdriver coverage available at: ' + 
+                        path.join(options.coverDir, 'lcov-report', 'index.html'));
                     done();
                 });
             } else {
@@ -164,11 +200,21 @@ module.exports = function(grunt) {
         });
     });
 
+    // aggregate all coverage data from all tests
     grunt.registerTask('total_coverage', 'Aggregate coverage from all tests', function() {
-        var done = this.async();
-        exec('node_modules/istanbul/lib/cli.js report --root build/reports --dir public/coverage/total', { }, function(err, stdout, stderr) {
+        var done = this.async()
+            , options = this.options()
+        ;
+
+        var aggCmd = 'node_modules/istanbul/lib/cli.js report --root' 
+            .concat(options.coverageDir)
+            .concat(' --dir ')
+            .concat(options.outputDir)
+        ;
+        exec(aggCmd, { }, function(err, stdout, stderr) {
             grunt.log.write(stdout);
-            grunt.log.write('Total coverage available at: ' + path.join(__dirname, 'public', 'coverage', 'total', 'lcov-report', 'index.html'));
+            grunt.log.write('Total coverage available at: ' + 
+                path.join(options.outputDir, 'lcov-report', 'index.html'));
             done();
         });
     });
