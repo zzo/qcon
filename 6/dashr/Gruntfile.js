@@ -90,19 +90,19 @@ module.exports = function(grunt) {
             options: {
                 coverDir: 'public/coverage/server'
                 , specDir: 'spec/server'
-                , junitDir: 'build/reports/jasmine_node/'
+                , junitDir: './build/reports/jasmine_node/'
             }
         }
         , webd: {
             options: {
                 tests: 'spec/webdriver/*.js'
-                , junitDir: 'build/reports/webdriver/'
+                , junitDir: './build/reports/webdriver/'
                 , coverDir: 'public/coverage/webdriver'
             }
         }
         , total_coverage: {
             options: {
-                coverageDir: 'build/reports'
+                coverageDir: './build/reports'
                 , outputDir: 'public/coverage/total'
             }
         }
