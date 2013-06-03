@@ -214,6 +214,13 @@ module.exports = function(grunt) {
                         path.join(options.coverDir, 'lcov-report', 'index.html'));
                     done();
                 });
+
+                /*
+                coverCmd.concat(' cobertura');
+                exec(coverCmd, { }, function(err, stdout, stderr) {
+                    grunt.log.write(stdout);
+                });
+                */
             } else {
                 done();
             }
@@ -235,6 +242,11 @@ module.exports = function(grunt) {
             grunt.log.write(stdout);
             grunt.log.write('Total coverage available at: ' + 
                 path.join(options.outputDir, 'lcov-report', 'index.html'));
+        });
+
+        coverCmd.concat(' cobertura');
+        exec(coverCmd, { }, function(err, stdout, stderr) {
+            grunt.log.write(stdout);
             done();
         });
     });
