@@ -9,3 +9,8 @@ add karma coverage
 
 npm install grunt-contrib-watch --save-dev
 
+
+http://jenkins-ci.org/
+
+
+npm install grunt-plato --save-dev

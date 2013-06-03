@@ -106,6 +106,25 @@ module.exports = function(grunt) {
                 , outputDir: 'public/coverage/total'
             }
         }
+        , plato: {
+            dashr: {
+              options : {
+                jshint : false
+              }
+              , files: {
+                'public/plato': ['public/javascripts/**/*.js', 'spec/**/*.js'],
+              }
+            }
+            , options: {
+                jshint: {
+                    globals: {
+                        jQuery: true
+                    }
+                    , 'laxcomma': true
+                    , 'multistr': true
+                }
+            }
+          },
     });
 
     // Load the plugins
@@ -115,7 +134,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-dustjs');
     grunt.loadNpmTasks('grunt-env');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+    grunt.loadNpmTasks('grunt-plato');
+
     // Default task(s).
     grunt.registerTask('default', ['jshint']);
 
