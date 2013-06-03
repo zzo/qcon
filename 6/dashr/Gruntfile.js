@@ -210,17 +210,10 @@ module.exports = function(grunt) {
 
                 exec(coverCmd, { }, function(err, stdout, stderr) {
                     grunt.log.write(stdout);
-                    grunt.log.write('Webdriver coverage available at: ' + 
+                    grunt.log.writeln('Webdriver coverage available at: ' + 
                         path.join(options.coverDir, 'lcov-report', 'index.html'));
                     done();
                 });
-
-                /*
-                coverCmd.concat(' cobertura');
-                exec(coverCmd, { }, function(err, stdout, stderr) {
-                    grunt.log.write(stdout);
-                });
-                */
             } else {
                 done();
             }
@@ -238,16 +231,19 @@ module.exports = function(grunt) {
             .concat(' --dir ')
             .concat(options.outputDir)
         ;
+
         exec(aggCmd, { }, function(err, stdout, stderr) {
             grunt.log.write(stdout);
-            grunt.log.write('Total coverage available at: ' + 
+            grunt.log.writeln('Total coverage available at: ' + 
                 path.join(options.outputDir, 'lcov-report', 'index.html'));
+
+            // output cobertura for jenkins
+            aggCmd += ' cobertura';
+            exec(aggCmd, { }, function(err, stdout, stderr) {
+                grunt.log.write(stdout);
+                done();
+            });
         });
 
-        coverCmd.concat(' cobertura');
-        exec(coverCmd, { }, function(err, stdout, stderr) {
-            grunt.log.write(stdout);
-            done();
-        });
     });
 };
