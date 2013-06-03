@@ -1,5 +1,5 @@
 #!/bin/bash
 
 export PATH=$PATH:/usr/loacal/bin
-grunt test
+/usr//local/bin/node /usr/local/bin/grunt
 
