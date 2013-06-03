@@ -144,7 +144,8 @@ module.exports = function(grunt) {
         'jasmine',
         'jasmine_node_coverage',
         'webdriver_coverage',
-        'total_coverage'
+        'total_coverage',
+        'plato'
     ]); 
 
     // webdriver tests with coverage

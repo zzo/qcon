@@ -1,5 +1,7 @@
 #!/bin/bash
 
-export PATH=$PATH:/usr/loacal/bin
-/usr//local/bin/node /usr/local/bin/grunt
+export PATH=/usr/local/bin:/opt/local/bin/phantomjs:$PATH;
+ 
+npm install
+grunt test --no-color
 
