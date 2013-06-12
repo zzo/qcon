@@ -6,7 +6,12 @@ describe("A suite", function() {
     runs(function() {
         var req = http.request("http://localhost:3000", function(response) {
             expect(response.statusCode).toEqual(200);
-            done = true;
+            response.on('data', function(chunk) {
+                console.log(chunk.toString());
+                // Welcome to Express
+                expect(chunk.toString()).toMatch(/Welcome to Express/);
+                done = true;
+            });
         });
         req.end();
     });

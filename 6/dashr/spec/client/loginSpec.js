@@ -114,6 +114,7 @@ describe("login", function() {
 
         // call success callback
         spyOn($, "ajax").andCallFake(function(options) {
+            // call error method
             options.error(null, 'no dice', 500);
         });
 

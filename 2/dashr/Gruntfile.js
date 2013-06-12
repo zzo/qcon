@@ -1,4 +1,5 @@
 var path = require('path');
+var exec = require('child_process').exec;
 module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
@@ -14,8 +15,8 @@ module.exports = function(grunt) {
         },
         jasmine : {
             test: {
-                src : 'public/javascripts/**/*.js',
-                options : {
+                src : 'public/javascripts/**/*.js'
+                , options : {
                     specs : 'spec/client/**/*.js'
                     , vendor: [ 
                         'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js'
@@ -28,6 +29,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        /*
         jasmine_node: {
             all: ['spec/server'],
             projectRoot: ".",
@@ -40,15 +42,14 @@ module.exports = function(grunt) {
                 consolidate: true
             }
         },
+        */
         express: {
             server: {
                 options: {
-                /*
                     server: path.resolve('./app.js')
                     , debug: true
                     , bases: 'public'
                     , host : 'http://127.0.0.1:3000/'
-                    */
                 }
             }
         }
@@ -57,7 +58,7 @@ module.exports = function(grunt) {
     // Load the plugins
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
-    grunt.loadNpmTasks('grunt-jasmine-node');
+//    grunt.loadNpmTasks('grunt-jasmine-node');
     grunt.loadNpmTasks('grunt-express');
     
     // Default task(s).
@@ -69,4 +70,14 @@ module.exports = function(grunt) {
         'express',
         'jasmine_node',
     ]); 
+
+    grunt.registerTask('jasmine_node', 'jasmine_node', function() {
+        var done = this.async();
+
+        exec('jasmine-node spec/server --forceexit', { }, function(err, stdout, stderr) {
+            grunt.log.write(stdout);
+            grunt.log.write(stderr);
+            done();
+        });
+    });
 };

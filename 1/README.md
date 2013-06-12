@@ -1,5 +1,5 @@
 install nodejs
-sudo npm install express
+sudo npm install express -g
 express -s dashr
 <view/edit package.json>
 npm install

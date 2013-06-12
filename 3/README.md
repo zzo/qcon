@@ -1,7 +1,8 @@
 tests!
 
 npm install grunt-dustjs --save-dev
-pre-compile templates
+must now pre-compile templates:
+% grunt dustjs
 grunt.loadNpmTasks('grunt-dustjs');
 
 

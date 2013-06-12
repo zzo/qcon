@@ -21,10 +21,10 @@ module.exports = function(grunt) {
                     specs : 'spec/client/**/*.js'
                     , keepRunner: true
                     , vendor: [ 
-                        'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js'
+                        'public/vendor/jquery-2.0.2.min.js'
                         , 'public/vendor/jasmine-jquery.js' 
                         , 'public/vendor/dust-core-1.2.3.min.js' 
-                        , '/vendor/bootstrap/js/bootstrap.min.js'
+                        , 'vendor/bootstrap/js/bootstrap.min.js'
                     ]
                     , junit: {
                         path: "./build/reports/jasmine/"
